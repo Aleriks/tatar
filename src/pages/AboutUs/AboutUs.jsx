@@ -174,6 +174,7 @@ export default () => {
                     address: 'Address',
                     video: '/video/map/Padderborn.mp4',
                     endImage: '/img/map/1.webp',
+                    mode: 'end-image',
                     position: {
                         x: -.43,
                         y: 0.01,
@@ -186,7 +187,7 @@ export default () => {
                     video: '/video/map/Dusseldorf.mp4',
                     endImage: '/img/map/2.webp',
                     textPos: 'left',
-                    mode: 'end-stop',  // или 'end-image'
+                    mode: 'end-image',  // или 'end-image'
                     position: {
                         x: -.055,
                         y: -.095,
@@ -199,7 +200,7 @@ export default () => {
                     video: '/video/map/Padderborn.mp4',
                     endImage: '/img/map/3.webp',
                     textPos: 'center',
-                    mode: 'end-stop',  // или 'end-image'
+                    mode: 'end-image',  // или 'end-image'
                     position: {
                         x: -.043,
                         y: -.105,
@@ -211,7 +212,7 @@ export default () => {
                     address: 'Address',
                     video: '/video/map/Munich.mp4',
                     endImage: '/img/map/4.webp',
-                    mode: 'end-stop',  // или 'end-image'
+                    mode: 'end-image',  // или 'end-image'
                     position: {
                         x: -.035,
                         y: -.063,
@@ -223,6 +224,7 @@ export default () => {
                     address: 'Address',
                     video: '/video/map/Padderborn.mp4',
                     endImage: '/img/map/5.webp',
+                    mode: 'end-image',
                     textPos: 'left',
                     position: {
                         x: .455,
