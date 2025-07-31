@@ -6,7 +6,6 @@ import { observer } from 'mobx-react-lite';
 export default observer(({ path, pathLoop }) => {
     const videoRef = useRef(null);
     const videoRefLoop = useRef(null);
-
     const canvasRef = useRef(null);
     const playingRef = useRef(false);
 
@@ -26,9 +25,7 @@ export default observer(({ path, pathLoop }) => {
             return;
         }
 
-
         console.log('▶️ playFrameByFrame:', { from, to, forward });
-
 
         const step = 1 / fps;
         let current = from;
@@ -51,7 +48,6 @@ export default observer(({ path, pathLoop }) => {
             draw();
         };
 
-
         const renderNext = () => {
             if (!playingRef.current) return;
 
@@ -69,14 +65,14 @@ export default observer(({ path, pathLoop }) => {
             }
 
             const time = forward
-                ? from + frameIndex * step
-                : from - frameIndex * step;
+              ? from + frameIndex * step
+              : from - frameIndex * step;
 
             const onSeeked = () => {
                 video.removeEventListener('seeked', onSeeked);
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 frameIndex++;
-                setTimeout(renderNext, 1000 / fps); // фикс
+                setTimeout(renderNext, 1000 / fps);
             };
 
             console.log(`video.currentTime: ${video.currentTime}`);
@@ -88,20 +84,13 @@ export default observer(({ path, pathLoop }) => {
         const onStartSeeked = () => {
             video.removeEventListener('seeked', onStartSeeked);
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            setTimeout(renderNext, 1000 / fps); // фикс
+            setTimeout(renderNext, 1000 / fps);
         };
-
-
-
 
         video.pause();
         video.addEventListener('seeked', onStartSeeked);
         video.currentTime = current;
     };
-
-
-
-
 
     useEffect(() => {
         const video = videoRef.current;
@@ -144,14 +133,25 @@ export default observer(({ path, pathLoop }) => {
         const onScroll = () => {
             if (!hasScrolledRef.current) {
                 hasScrolledRef.current = true;
-                video.play();
-                requestAnimationFrame(draw);
+
+                if (mainPageStore.isFirstVisit) {
+                    video.play();
+                    requestAnimationFrame(draw);
+                } else {
+                    loopVideo.play();
+                    drawLoop();
+                    mainPageStore.end();
+                }
+
                 window.removeEventListener('scroll', onScroll);
             }
         };
 
         const onEnd = () => {
-            mainPageStore.end(); // если нужно
+            if (mainPageStore.isFirstVisit) {
+                mainPageStore.setFirstVisitComplete();
+            }
+            mainPageStore.end();
             loopVideo.play();
             drawLoop();
         };
@@ -161,36 +161,47 @@ export default observer(({ path, pathLoop }) => {
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
         });
+
+        if (!mainPageStore.isFirstVisit) {
+            loopVideo.addEventListener('loadeddata', () => {
+                canvas.width = loopVideo.videoWidth;
+                canvas.height = loopVideo.videoHeight;
+                drawFrame(loopVideo);
+                loopVideo.play();
+                drawLoop();
+            });
+        }
+
         window.addEventListener('scroll', onScroll);
 
         return () => {
             video.removeEventListener('ended', onEnd);
             window.removeEventListener('scroll', onScroll);
         };
-    }, []);
+    }, [mainPageStore.isFirstVisit]);
 
     return (
-        <div className='SubPageDecor'>
-            <div className='RealEstate_hero_decor RealEstate_hero_decor_vid free_img' >
-                <canvas ref={canvasRef} />
-                <video
-                    ref={videoRef}
-                    src={path}
-                    muted
-                    preload='auto'
-                    playsInline
-                    style={{ display: 'none' }}
-                />
-                <video
-                    ref={videoRefLoop}
-                    src={pathLoop}
-                    muted
-                    preload='auto'
-                    playsInline
-                    loop
-                    style={{ display: 'none' }}
-                />
-            </div>
-        </div>
+      <div className='SubPageDecor'>
+          <div className='RealEstate_hero_decor RealEstate_hero_decor_vid free_img' >
+              <canvas ref={canvasRef} />
+              <video
+                ref={videoRef}
+                src={path}
+                muted
+                preload='auto'
+                playsInline
+                style={{ display: 'none' }}
+              />
+              <video
+                ref={videoRefLoop}
+                src={pathLoop}
+                muted
+                preload='auto'
+                playsInline
+                loop
+                style={{ display: 'none' }}
+              />
+          </div>
+      </div>
     );
 });

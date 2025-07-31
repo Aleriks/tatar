@@ -5,6 +5,11 @@ class MainPageStore {
     slidePlaying = false
     direction = 1
     checkScroll = true;
+    isFirstVisit = true;
+
+    setFirstVisitComplete() {
+        this.isFirstVisit = false;
+    }
 
     constructor() {
         makeAutoObservable(this);
